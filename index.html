@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aaj Kya Banaye? — Maa Ki Rasoi Assistant</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-grid">
+      <h1 class="brand">Aaj Kya Banaye?</h1>
+      <div class="controls">
+        <button id="lang-en" class="lang-btn active">English</button>
+        <button id="lang-hi" class="lang-btn">हिन्दी</button>
+        <button id="dark-toggle" class="lang-btn">🌙</button>
+      </div>
+    </div>
+    <p class="tagline" data-en="Simple, friendly help for your kitchen" data-hi="Aapke rasoi ke liye saral aur mitravaadi madad">Simple, friendly help for your kitchen</p>
+  </header>
+  <div class="container"><div id="status" class="status">Status: ready</div></div>
+
+  <main class="container main-grid">
+    <div id="page-wrap" class="page-wrap">
+    <section class="input-card">
+      <h2 data-en="What do you have at home?" data-hi="Ghar mein kya hai?">What do you have at home?</h2>
+      <p class="hint" data-en="Type ingredients separated by commas (e.g., potato, onion, tomato)" data-hi="Samagriyan comma se alag karein (jaise: aloo, pyaz, tamatar)">Type ingredients separated by commas (e.g., potato, onion, tomato)</p>
+      <textarea id="ingredients-input" placeholder="potato, onion, tomato, rice, dal"></textarea>
+      <div class="row" style="margin-top:8px; align-items:center">
+        <label class="file-label">
+          <input type="file" id="image-input" accept="image/*">
+          <span data-en="Upload image of ingredients" data-hi="Samagri ki chhavi upload karein">Upload image of ingredients</span>
+        </label>
+        <button id="voice-btn" class="secondary">🎤 <span data-en="Speak (Hindi)" data-hi="Bolien (Hindi)">Speak (Hindi)</span></button>
+      </div>
+      <div class="row">
+        <button id="suggest-btn" type="button" class="primary">Suggest Recipes</button>
+        <button id="special-btn" type="button" class="secondary">Today's Special</button>
+      </div>
+    </section>
+
+    <aside class="filters-card">
+      <h3 data-en="Filters" data-hi="Filters">Filters</h3>
+      <div class="filter-group">
+        <label><input type="checkbox" class="cat-filter" value="Breakfast" checked> <span data-en="Breakfast" data-hi="Breakfast">Breakfast</span></label>
+        <label><input type="checkbox" class="cat-filter" value="Lunch" checked> <span data-en="Lunch" data-hi="Lunch">Lunch</span></label>
+        <label><input type="checkbox" class="cat-filter" value="Dinner" checked> <span data-en="Dinner" data-hi="Dinner">Dinner</span></label>
+        <label><input type="checkbox" class="cat-filter" value="Snacks" checked> <span data-en="Snacks" data-hi="Snacks">Snacks</span></label>
+      </div>
+      <div class="filter-group">
+        <label data-en="Max time" data-hi="Adhik se adhik samay">Max time</label>
+        <select id="time-filter">
+          <option value="any">Any</option>
+          <option value="10">Under 10 min</option>
+          <option value="20">Under 20 min</option>
+          <option value="30">Under 30 min</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label data-en="Budget (₹ max)" data-hi="Budget (₹ adhiktam)">Budget (₹ max)</label>
+        <input id="budget-filter" type="number" placeholder="e.g. 100">
+      </div>
+      <div class="filter-group">
+        <label><input type="checkbox" id="leftover-mode"> <span data-en="Leftover food mode" data-hi="Bachi hui khana mode">Leftover food mode</span></label>
+      </div>
+      <div class="filter-group">
+        <label data-en="Appliance" data-hi="Appliance">Appliance</label>
+        <select id="appliance-filter">
+          <option value="any">Any</option>
+          <option value="gas">Gas</option>
+          <option value="cooker">Cooker</option>
+          <option value="microwave">Microwave</option>
+        </select>
+      </div>
+      <div style="margin-top:8px"><button id="apply-filters" type="button" class="primary">Apply Filters</button></div>
+    </aside>
+
+    <aside class="special-card" id="today-special">
+      <h3 data-en="Today's Special" data-hi="Aaj Ka Vishesh">Today's Special</h3>
+      <div id="special-content">—</div>
+    </aside>
+
+    <section class="results" id="results">
+      <!-- recipe cards inserted here -->
+    </section>
+
+    <section class="planner-card" id="planner">
+      <h3 data-en="Weekly Meal Planner" data-hi="Saptahik Bhojan Yojana">Weekly Meal Planner</h3>
+      <div class="planner-grid" id="planner-grid">
+        <!-- days injected here -->
+      </div>
+      <div style="margin-top:8px"><button id="gen-grocery" type="button" class="secondary">Generate Grocery List</button></div>
+      <div id="grocery-list" style="margin-top:8px"></div>
+    </section>
+    </div>
+
+    <!-- Loading spinner -->
+    <div id="loading" class="loading hidden" aria-hidden="true">
+      <div class="spinner"></div>
+      <div class="loading-text" data-en="Searching recipes..." data-hi="Recipes khoje ja rahe hain...">Searching recipes...</div>
+    </div>
+
+    <!-- Chat assistant -->
+    <button id="chat-open" class="chat-open">💬</button>
+    <div id="chat-modal" class="chat-modal hidden" role="dialog" aria-label="Kitchen assistant chat">
+      <div class="chat-header">
+        <strong data-en="Maa Ki Assistant" data-hi="Maa Ki Assistant">Maa Ki Assistant</strong>
+        <button id="chat-close">✕</button>
+      </div>
+      <div id="chat-body" class="chat-body">
+        <div class="chat-msg bot">Namaste! Kaise madad karun?</div>
+      </div>
+      <div class="chat-input">
+        <input id="chat-input" placeholder="Type here: e.g. 'Aaj mehmaan aa rahe hain'">
+        <button id="chat-send" class="primary">Send</button>
+      </div>
+    </div>
+
+    <!-- small utilities -->
+    <div class="utilities">
+      <button id="toggle-offline" class="secondary">Offline View</button>
+      <button id="reminder-btn" class="secondary">Enable Daily Reminder</button>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <small data-en="Maa Ki Rasoi Assistant — Friendly recipes for every day." data-hi="Maa Ki Rasoi Assistant — Har din ke liye mitra-poorna vyanjan.">Maa Ki Rasoi Assistant — Friendly recipes for every day.</small>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
